@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package grpc.log;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+// Services
+
+service LogIngestorGrpc {
+    rpc SendLog(LogEntryRequest) returns (LogResponse);
+    rpc StreamLogs(stream LogEntryRequest) returns (LogResponse);
+}
+
+// Requests
+
+message LogEntryRequest {
+    google.protobuf.Timestamp timestamp = 1;
+    LogLevel level = 2;
+    string service_name = 3;
+    string message = 4;
+    google.protobuf.Struct metadata = 5;
+}
+
+// Responses
+
+message LogResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+
+// Common
+
+enum LogLevel {
+    DEBUG = 0;
+    INFO = 1;
+    WARN = 2;
+    ERROR = 3;
+    CRITICAL = 4;
+}
