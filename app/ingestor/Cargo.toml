@@ -13,9 +13,10 @@ path = "src/lib/lib.rs"
 
 [dependencies]
 anyhow = { workspace = true }
+chrono = { workspace = true }
+clickhouse = { workspace = true }
 prost = { workspace = true }
 prost-types = { workspace = true }
-serde = { workspace = true }
 tokio = { workspace = true }
 tonic = { workspace = true }
 tonic-prost = { workspace = true }

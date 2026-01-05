@@ -1,0 +1,21 @@
+services:
+    clickhouse:
+        container_name: clickhouse
+        hostname: clickhouse
+        image: clickhouse/clickhouse-server:25.11-alpine
+        environment:
+            CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+            CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+            CLICKHOUSE_DB: ${CLICKHOUSE_DB}
+            CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+        ports:
+            - "8123:8123"
+            - "9999:9000"
+        volumes:
+            - ./data/clickhouse/data:/var/lib/clickhouse
+            - ./data/clickhouse/logs:/var/log/clickhouse-server
+            - ./clickhouse/scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+        ulimits:
+            nofile:
+                soft: 262144
+                hard: 262144
