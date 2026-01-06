@@ -12,7 +12,17 @@ async fn main() -> Result<()> {
     let buffer_size = 10000;
     let (tx, rx) = mpsc::channel::<LogEntryRequest>(buffer_size);
 
-    let worker = WorkerBusiness::new(rx, 100, 5);
+    let ch_url = "http://localhost:8123"; // TODO: move in config
+    let ch_user = "log_pulse";
+    let ch_pass = "changeme";
+    let ch_db = "log_pulse";
+    let client = clickhouse::Client::default()
+        .with_url(ch_url)
+        .with_user(ch_user)
+        .with_password(ch_pass)
+        .with_database(ch_db);
+
+    let worker = WorkerBusiness::new(rx, 100, 5, client);
     worker.start().await;
 
     let server = GrpcServer::new();

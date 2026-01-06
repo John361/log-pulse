@@ -693,6 +693,7 @@ dependencies = [
  "clickhouse",
  "prost",
  "prost-types",
+ "serde",
  "tokio",
  "tonic",
  "tonic-prost",

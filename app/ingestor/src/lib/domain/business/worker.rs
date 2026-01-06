@@ -1,22 +1,26 @@
 use std::time::Duration;
 
+use clickhouse::Client;
 use tokio::sync::mpsc;
 use tokio::time::interval;
 
+use crate::domain::model::LogRow;
 use crate::grpc::log::LogEntryRequest;
 
 pub struct WorkerBusiness {
     rx: mpsc::Receiver<LogEntryRequest>,
     batch_capacity: usize,
     flush_interval_seconds: u64,
+    clickhouse_client: Client,
 }
 
 impl WorkerBusiness {
-    pub fn new(rx: mpsc::Receiver<LogEntryRequest>, batch_capacity: usize, flush_interval_seconds: u64) -> Self {
+    pub fn new(rx: mpsc::Receiver<LogEntryRequest>, batch_capacity: usize, flush_interval_seconds: u64, clickhouse_client: Client) -> Self {
         Self {
             rx,
             batch_capacity,
             flush_interval_seconds,
+            clickhouse_client,
         }
     }
 
@@ -47,10 +51,23 @@ impl WorkerBusiness {
     }
 
     async fn flush_batch(&self, batch: &mut Vec<LogEntryRequest>) { // TODO: move in repository
+        if batch.is_empty() {
+            return;
+        }
+
         let count = batch.len();
+        let rows: Vec<LogRow> = batch.drain(..).map(LogRow::from).collect();
+        let mut insert: clickhouse::insert::Insert<LogRow> = self.clickhouse_client.insert("logs").await.unwrap();
 
-        tracing::info!("--- Flushing batch of {} logs to storage ---", count);
+        for row in rows {
+            if let Err(e) = insert.write(&row).await {
+                tracing::error!("Failed to write row to ClickHouse buffer: {:?}", e);
+            }
+        }
 
-        batch.clear();
+        match insert.end().await {
+            Ok(_) => tracing::info!("Successfully flushed {} logs to ClickHouse", count),
+            Err(e) => tracing::error!("Failed to commit batch to ClickHouse: {:?}", e),
+        }
     }
 }

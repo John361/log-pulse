@@ -8,6 +8,7 @@ chrono = { version = "0.4", features = ["serde"] }
 clickhouse = { version = "0.14.1", features = ["chrono"] }
 prost = "0.14.1"
 prost-types = "0.14.1"
+serde = { version = "1.0.228", features = ["std", "derive"] }
 tokio = { version = "1.49.0", features = ["rt", "rt-multi-thread", "macros"] }
 tonic = "0.14.2"
 tonic-prost = "0.14.2"
