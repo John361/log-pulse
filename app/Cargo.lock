@@ -882,6 +882,7 @@ name = "log-pulse-ingestor"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "async-trait",
  "chrono",
  "clickhouse",
  "config",
