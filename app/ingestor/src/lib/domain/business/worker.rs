@@ -1,26 +1,26 @@
 use std::time::Duration;
 
-use clickhouse::Client;
 use tokio::sync::mpsc;
 use tokio::time::interval;
 
 use crate::domain::model::LogRow;
+use crate::domain::service::LogRowService;
 use crate::grpc::log::LogEntryRequest;
 
 pub struct WorkerBusiness {
     rx: mpsc::Receiver<LogEntryRequest>,
     batch_capacity: usize,
     flush_interval_seconds: u64,
-    clickhouse_client: Client,
+    service: LogRowService,
 }
 
 impl WorkerBusiness {
-    pub fn new(rx: mpsc::Receiver<LogEntryRequest>, batch_capacity: usize, flush_interval_seconds: u64, clickhouse_client: Client) -> Self {
+    pub fn new(rx: mpsc::Receiver<LogEntryRequest>, batch_capacity: usize, flush_interval_seconds: u64, service: LogRowService) -> Self {
         Self {
             rx,
             batch_capacity,
             flush_interval_seconds,
-            clickhouse_client,
+            service,
         }
     }
 
@@ -50,32 +50,18 @@ impl WorkerBusiness {
         });
     }
 
-    async fn flush_batch(&self, batch: &mut Vec<LogEntryRequest>) { // TODO: move in repository
+    async fn flush_batch(&self, batch: &mut Vec<LogEntryRequest>) {
         if batch.is_empty() {
             return;
         }
 
-        let count = batch.len();
-        let mut insert: clickhouse::insert::Insert<LogRow> = match self.clickhouse_client.insert("logs").await {
-            Ok(ins) => ins,
-            Err(e) => {
-                tracing::error!("Cannot initialize Clickhouse insert: {:?}", e);
-                return;
-            }
-        };
+        let mut values = Vec::new();
 
         for entry in batch.drain(..) {
             let row = LogRow::from(entry);
-
-            if let Err(e) = insert.write(&row).await {
-                tracing::error!("Write error in Clickhouse buffer: {:?}", e);
-                // TODO: but row in emergency buffer
-            }
+            values.push(row);
         }
 
-        match insert.end().await {
-            Ok(_) => tracing::info!("Successfully flushed {} logs to ClickHouse", count),
-            Err(e) => tracing::error!("Failed to commit batch to ClickHouse: {:?}", e),
-        }
+        self.service.insert(values).await.unwrap(); // TODO: fix unwrap
     }
 }

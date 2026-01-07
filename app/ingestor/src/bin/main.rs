@@ -1,27 +1,19 @@
-use anyhow::Result;
-use tokio::sync::mpsc;
-
+use lib::app::{build_clickhouse_service, build_grpc_server, build_log_row_service, build_mscp_channel, build_worker_business};
 use lib::config::AppConfig;
-use lib::domain::business::WorkerBusiness;
-use lib::grpc::log::LogEntryRequest;
-use lib::infra_inbound_grpc::service::GrpcServer;
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() -> anyhow::Result<()> {
     init_tracing();
 
     let config = AppConfig::default();
-    let clickhouse_client = clickhouse::Client::default()
-        .with_url(config.clickhouse.address)
-        .with_user(config.clickhouse.user)
-        .with_password(config.clickhouse.password)
-        .with_database(config.clickhouse.database);
+    let clickhouse_service = build_clickhouse_service(config.clickhouse);
+    let (tx, rx) = build_mscp_channel(&config.worker);
 
-    let (tx, rx) = mpsc::channel::<LogEntryRequest>(config.worker.buffer_size);
-    let worker = WorkerBusiness::new(rx, config.worker.batch_capacity, config.worker.flush_interval_seconds, clickhouse_client);
+    let log_row_service = build_log_row_service(&clickhouse_service);
+    let worker = build_worker_business(&config.worker, rx, log_row_service);
     worker.start().await;
 
-    let server = GrpcServer::new(config.grpc);
+    let server = build_grpc_server(config.grpc);
     server.start(tx).await;
 
     Ok(())

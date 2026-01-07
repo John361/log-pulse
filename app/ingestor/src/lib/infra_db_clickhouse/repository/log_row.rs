@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use async_trait::async_trait;
+use clickhouse::insert::Insert;
 use tokio::sync::Mutex;
 
 use crate::domain::model::LogRow;
@@ -22,7 +23,8 @@ impl LogRowClickhouseRepository {
 impl LogRowRepository for LogRowClickhouseRepository {
     async fn insert(&self, values: Vec<LogRow>) -> Result<()> {
         let service = self.service.lock().await;
-        let mut insert: clickhouse::insert::Insert<LogRow> = match service.client().insert("logs").await {
+
+        let mut insert: Insert<LogRow> = match service.client().insert("logs").await {
             Ok(ins) => ins,
             Err(e) => {
                 tracing::error!("Cannot initialize Clickhouse insert: {:?}", e);

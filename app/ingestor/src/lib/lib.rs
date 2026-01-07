@@ -1,6 +1,6 @@
 pub mod app;
 pub mod config;
-pub mod domain;
-pub mod grpc;
-pub mod infra_db_clickhouse;
-pub mod infra_inbound_grpc;
+pub(crate) mod domain;
+pub(crate) mod grpc;
+pub(crate) mod infra_db_clickhouse;
+pub(crate) mod infra_inbound_grpc;
