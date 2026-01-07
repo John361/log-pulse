@@ -9,5 +9,5 @@ grpcurl -plaintext \
         "level": "INFO",
         "timestamp": "2026-01-05T10:00:00Z"
     }' \
-    [::1]:50051 \
+    [::1]:8080 \
     grpc.log.LogIngestorGrpc/SendLog

@@ -1,6 +1,7 @@
 use anyhow::Result;
 use tokio::sync::mpsc;
 
+use lib::config::AppConfig;
 use lib::domain::business::WorkerBusiness;
 use lib::grpc::log::LogEntryRequest;
 use lib::infra_inbound_grpc::service::GrpcServer;
@@ -9,23 +10,18 @@ use lib::infra_inbound_grpc::service::GrpcServer;
 async fn main() -> Result<()> {
     init_tracing();
 
-    let buffer_size = 10000;
-    let (tx, rx) = mpsc::channel::<LogEntryRequest>(buffer_size);
+    let config = AppConfig::default();
+    let clickhouse_client = clickhouse::Client::default()
+        .with_url(config.clickhouse.address)
+        .with_user(config.clickhouse.user)
+        .with_password(config.clickhouse.password)
+        .with_database(config.clickhouse.database);
 
-    let ch_url = "http://localhost:8123"; // TODO: move in config
-    let ch_user = "log_pulse";
-    let ch_pass = "changeme";
-    let ch_db = "log_pulse";
-    let client = clickhouse::Client::default()
-        .with_url(ch_url)
-        .with_user(ch_user)
-        .with_password(ch_pass)
-        .with_database(ch_db);
-
-    let worker = WorkerBusiness::new(rx, 100, 5, client);
+    let (tx, rx) = mpsc::channel::<LogEntryRequest>(config.worker.buffer_size);
+    let worker = WorkerBusiness::new(rx, config.worker.batch_capacity, config.worker.flush_interval_seconds, clickhouse_client);
     worker.start().await;
 
-    let server = GrpcServer::new();
+    let server = GrpcServer::new(config.grpc);
     server.start(tx).await;
 
     Ok(())

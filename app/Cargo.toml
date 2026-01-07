@@ -6,6 +6,7 @@ members = ["ingestor"]
 anyhow = "1.0.100"
 chrono = { version = "0.4", features = ["serde"] }
 clickhouse = { version = "0.14.1", features = ["chrono"] }
+config = { version = "0.15.19", features = ["yaml"] }
 prost = "0.14.1"
 prost-types = "0.14.1"
 serde = { version = "1.0.228", features = ["std", "derive"] }

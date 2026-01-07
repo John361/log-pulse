@@ -1,0 +1,14 @@
+clickhouse:
+    address: "http://localhost:8123"
+    user: "log_pulse"
+    password: "changeme"
+    database: "log_pulse"
+
+grpc:
+    address: "[::1]"
+    port: 8080
+
+worker:
+    buffer_size: 10000
+    batch_capacity: 100
+    flush_interval_seconds: 5

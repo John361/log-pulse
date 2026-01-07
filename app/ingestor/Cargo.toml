@@ -15,6 +15,7 @@ path = "src/lib/lib.rs"
 anyhow = { workspace = true }
 chrono = { workspace = true }
 clickhouse = { workspace = true }
+config = { workspace = true }
 prost = { workspace = true }
 prost-types = { workspace = true }
 serde = { workspace = true }
