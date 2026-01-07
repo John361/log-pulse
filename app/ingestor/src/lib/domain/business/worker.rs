@@ -56,12 +56,20 @@ impl WorkerBusiness {
         }
 
         let count = batch.len();
-        let rows: Vec<LogRow> = batch.drain(..).map(LogRow::from).collect();
-        let mut insert: clickhouse::insert::Insert<LogRow> = self.clickhouse_client.insert("logs").await.unwrap();
+        let mut insert: clickhouse::insert::Insert<LogRow> = match self.clickhouse_client.insert("logs").await {
+            Ok(ins) => ins,
+            Err(e) => {
+                tracing::error!("Cannot initialize Clickhouse insert: {:?}", e);
+                return;
+            }
+        };
 
-        for row in rows {
+        for entry in batch.drain(..) {
+            let row = LogRow::from(entry);
+
             if let Err(e) = insert.write(&row).await {
-                tracing::error!("Failed to write row to ClickHouse buffer: {:?}", e);
+                tracing::error!("Write error in Clickhouse buffer: {:?}", e);
+                // TODO: but row in emergency buffer
             }
         }
 
