@@ -34,6 +34,7 @@ fn init_tracing() {
             tracing_subscriber::EnvFilter::from_default_env()
                 .add_directive("h2::codec=warn".parse().unwrap())
                 .add_directive("h2::proto=warn".parse().unwrap())
+                .add_directive("hyper_util::client=warn".parse().unwrap())
         )
         .init();
 
