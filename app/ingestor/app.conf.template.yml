@@ -12,7 +12,7 @@ redis:
     address: "127.0.0.1:6379"
     user: "default"
     password: "changeme"
-    batch_capacity: 100
+    batch_capacity: 3000
 
 worker:
     buffer_size: 10000
