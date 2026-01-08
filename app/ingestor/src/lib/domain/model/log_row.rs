@@ -47,15 +47,3 @@ impl From<LogEntryRequest> for LogRow {
         }
     }
 }
-
-impl From<LogRow> for LogEntryRequest { // TODO: move in grpc module
-    fn from(value: LogRow) -> Self {
-        LogEntryRequest {
-            timestamp: None,
-            level: value.level as i32,
-            service_name: value.service_name,
-            message: value.message,
-            metadata: None,
-        }
-    }
-}
