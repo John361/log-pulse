@@ -11,4 +11,5 @@ pub trait LogRowRepository: Send + Sync + 'static {
 #[async_trait]
 pub trait LogRowBufferRepository: Send + Sync + 'static {
     async fn push(&self, value: LogRow) -> Result<()>;
+    async fn flush(&self) -> Result<Vec<LogRow>>;
 }

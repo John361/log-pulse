@@ -28,6 +28,10 @@ impl LogRowService {
     }
 
     pub async fn flush(&self) -> Result<()> {
-        Ok(())
+        let repository = self.repository.lock().await;
+        let repository_buffer = self.buffer_repository.lock().await;
+        let logs = repository_buffer.flush().await?;
+
+        repository.insert(logs).await
     }
 }

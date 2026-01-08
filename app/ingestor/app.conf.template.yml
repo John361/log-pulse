@@ -12,8 +12,8 @@ redis:
     address: "127.0.0.1:6379"
     user: "default"
     password: "changeme"
+    batch_capacity: 100
 
 worker:
     buffer_size: 10000
-    batch_capacity: 100
     flush_interval_seconds: 5

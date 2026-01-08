@@ -5,16 +5,18 @@ use crate::config::RedisConfig;
 
 pub struct RedisService {
     connection: MultiplexedConnection,
+    pub batch_capacity: usize,
 }
 
 impl RedisService {
     pub async fn new(config: RedisConfig) -> Self {
         Self {
-            connection: Self::connect(config).await,
+            connection: Self::connect(&config).await,
+            batch_capacity: config.batch_capacity,
         }
     }
 
-    async fn connect(config: RedisConfig) -> MultiplexedConnection {
+    async fn connect(config: &RedisConfig) -> MultiplexedConnection {
         let client = Client::open(config.uri())
             .unwrap_or_else(|e| panic!("Cannot get redis client connection: {e:?}"));
 

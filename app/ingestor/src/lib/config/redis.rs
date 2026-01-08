@@ -5,6 +5,7 @@ pub struct RedisConfig {
     address: String,
     user: String,
     password: String, // TODO: use as a secret
+    pub batch_capacity: usize,
 }
 
 impl RedisConfig {

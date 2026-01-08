@@ -33,4 +33,21 @@ impl LogRowBufferRepository for LogRowBufferRedisRepository {
 
         Ok(())
     }
+
+    async fn flush(&self) -> Result<Vec<LogRow>> {
+        let service = self.service.lock().await;
+        let mut connection = service.connection().clone();
+
+        let logs: Vec<String> = redis::cmd("LPOP")
+            .arg("ingestor:logs")
+            .arg(service.batch_capacity)
+            .query_async(&mut connection)
+            .await?;
+
+        let logs = logs.iter()
+            .filter_map(|json| serde_json::from_str::<LogRow>(json).ok())
+            .collect();
+
+        Ok(logs)
+    }
 }
