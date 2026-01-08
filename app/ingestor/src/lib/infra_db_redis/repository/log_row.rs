@@ -22,7 +22,7 @@ impl LogRowBufferRedisRepository {
 impl LogRowBufferRepository for LogRowBufferRedisRepository {
     async fn push(&self, value: LogRow) -> Result<()> {
         let service = self.service.lock().await;
-        let mut connection = service.connection().await?;
+        let mut connection = service.connection().clone();
         let log_json = serde_json::to_string(&value)?;
 
         let _: () = redis::cmd("RPUSH")
