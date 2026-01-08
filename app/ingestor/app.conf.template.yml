@@ -18,3 +18,4 @@ redis:
 worker:
     buffer_size: 10000
     flush_interval_seconds: 5
+    batch_capacity: 1000

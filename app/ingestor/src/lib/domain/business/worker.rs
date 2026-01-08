@@ -9,14 +9,16 @@ use crate::grpc::log::LogEntryRequest;
 pub struct WorkerBusiness {
     rx: mpsc::Receiver<LogEntryRequest>,
     flush_interval_seconds: u64,
+    batch_capacity: usize,
     service: LogRowService,
 }
 
 impl WorkerBusiness {
-    pub fn new(rx: mpsc::Receiver<LogEntryRequest>, flush_interval_seconds: u64, service: LogRowService) -> Self {
+    pub fn new(rx: mpsc::Receiver<LogEntryRequest>, flush_interval_seconds: u64, batch_capacity: usize, service: LogRowService) -> Self {
         Self {
             rx,
             flush_interval_seconds,
+            batch_capacity,
             service,
         }
     }
@@ -24,14 +26,14 @@ impl WorkerBusiness {
     pub async fn start(mut self) {
         tokio::spawn(async move {
             let mut flush_interval = interval(Duration::from_secs(self.flush_interval_seconds));
-            let mut local_batch = Vec::with_capacity(1000); // TODO: move in config
+            let mut local_batch = Vec::with_capacity(self.batch_capacity);
 
             loop {
                 tokio::select! {
                     Some(log) = self.rx.recv() => {
                         local_batch.push(log.into());
 
-                        if local_batch.len() >= 1000 { // TODO: move in config
+                        if local_batch.len() >= self.batch_capacity {
                             if let Err(e) = self.service.push_to_buffer(local_batch.drain(..).collect()).await {
                                 tracing::error!("Failed to push batch to buffer: {:?}", e);
                             }
