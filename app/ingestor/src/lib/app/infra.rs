@@ -12,8 +12,8 @@ pub async fn build_clickhouse_service(config: ClickhouseConfig) -> Arc<Mutex<Cli
     Arc::new(Mutex::new(service))
 }
 
-pub fn build_redis_service(config: RedisConfig) -> Arc<Mutex<RedisService>> {
-    let service = RedisService::new(config);
+pub async fn build_redis_service(config: RedisConfig) -> Arc<Mutex<RedisService>> {
+    let service = RedisService::new(config).await;
     Arc::new(Mutex::new(service))
 }
 

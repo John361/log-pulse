@@ -8,7 +8,7 @@ async fn main() -> anyhow::Result<()> {
     let config = AppConfig::default();
 
     let clickhouse_service = build_clickhouse_service(config.clickhouse).await;
-    let redis_service = build_redis_service(config.redis);
+    let redis_service = build_redis_service(config.redis).await;
 
     let (tx, rx) = build_mscp_channel(&config.worker);
 

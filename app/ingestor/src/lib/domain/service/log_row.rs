@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use anyhow::Result;
 use tokio::sync::Mutex;
 
 use crate::domain::model::LogRow;
@@ -16,8 +17,17 @@ impl LogRowService {
         Self { repository, buffer_repository }
     }
 
-    pub async fn insert(&self, values: Vec<LogRow>) -> anyhow::Result<()> {
+    pub async fn insert(&self, values: Vec<LogRow>) -> Result<()> {
         let repository = self.repository.lock().await;
         repository.insert(values).await
+    }
+
+    pub async fn push_to_buffer(&self, value: LogRow) -> Result<()> {
+        let repository = self.buffer_repository.lock().await;
+        repository.push(value).await
+    }
+
+    pub async fn flush(&self) -> Result<()> {
+        Ok(())
     }
 }

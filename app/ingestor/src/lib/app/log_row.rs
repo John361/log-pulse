@@ -30,5 +30,5 @@ pub fn build_mscp_channel(config: &WorkerConfig) -> (Sender<LogEntryRequest>, Re
 }
 
 pub fn build_worker_business(config: &WorkerConfig, rx: Receiver<LogEntryRequest>, service: LogRowService) -> WorkerBusiness {
-    WorkerBusiness::new(rx, config.batch_capacity, config.flush_interval_seconds, service)
+    WorkerBusiness::new(rx, config.flush_interval_seconds, service)
 }
