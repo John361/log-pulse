@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::grpc::log::LogEntryRequest;
 
-#[derive(Debug, Row, Serialize, Deserialize)]
+#[derive(Clone, Debug, Row, Serialize, Deserialize)]
 pub struct LogRow {
     pub timestamp: i64,
     pub level: i8,
@@ -44,6 +44,18 @@ impl From<LogEntryRequest> for LogRow {
             service_name: value.service_name,
             message: value.message,
             metadata: HashMap::new(),
+        }
+    }
+}
+
+impl From<LogRow> for LogEntryRequest { // TODO: move in grpc module
+    fn from(value: LogRow) -> Self {
+        LogEntryRequest {
+            timestamp: None,
+            level: value.level as i32,
+            service_name: value.service_name,
+            message: value.message,
+            metadata: None,
         }
     }
 }

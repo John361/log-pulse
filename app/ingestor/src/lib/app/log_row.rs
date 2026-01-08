@@ -13,7 +13,7 @@ use crate::infra_db_clickhouse::service::ClickhouseService;
 use crate::infra_db_redis::repository::LogRowBufferRedisRepository;
 use crate::infra_db_redis::service::RedisService;
 
-pub fn build_log_row_service(clickhouse_service: &Arc<Mutex<ClickhouseService>>, redis_service: &Arc<Mutex<RedisService>>) -> LogRowService {
+pub fn build_log_row_service(clickhouse_service: &Arc<Mutex<ClickhouseService>>, redis_service: &Arc<RedisService>) -> LogRowService {
     let repository = LogRowClickhouseRepository::new(clickhouse_service.clone());
     let repository: Box<dyn LogRowRepository> = Box::new(repository);
     let repository = Arc::new(Mutex::new(repository));

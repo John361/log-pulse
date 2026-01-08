@@ -22,9 +22,9 @@ impl LogRowService {
         repository.insert(values).await
     }
 
-    pub async fn push_to_buffer(&self, value: LogRow) -> Result<()> {
+    pub async fn push_to_buffer(&self, values: Vec<LogRow>) -> Result<()> {
         let repository = self.buffer_repository.lock().await;
-        repository.push(value).await
+        repository.push(values).await
     }
 
     pub async fn flush(&self) -> Result<()> {

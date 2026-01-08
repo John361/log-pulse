@@ -24,16 +24,27 @@ impl WorkerBusiness {
     pub async fn start(mut self) {
         tokio::spawn(async move {
             let mut flush_interval = interval(Duration::from_secs(self.flush_interval_seconds));
+            let mut local_batch = Vec::with_capacity(1000); // TODO: move in config
 
             loop {
                 tokio::select! {
                     Some(log) = self.rx.recv() => {
-                        if let Err(e) = self.service.push_to_buffer(log.into()).await {
-                            tracing::error!("Failed to push to buffer: {:?}", e);
+                        local_batch.push(log.into());
+
+                        if local_batch.len() >= 1000 { // TODO: move in config
+                            if let Err(e) = self.service.push_to_buffer(local_batch.drain(..).collect()).await {
+                                tracing::error!("Failed to push batch to buffer: {:?}", e);
+                            }
                         }
                     }
 
                     _ = flush_interval.tick() => {
+                        if !local_batch.is_empty() {
+                            if let Err(e) = self.service.push_to_buffer(local_batch.drain(..).collect()).await {
+                                tracing::error!("Failed to push remaining batch to buffer: {:?}", e);
+                            }
+                        }
+
                         tracing::info!("Flushing batch due to interval...");
 
                         if let Err(e) = self.service.flush().await {
