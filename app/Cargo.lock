@@ -910,6 +910,7 @@ dependencies = [
  "prost-types",
  "redis",
  "serde",
+ "serde_json",
  "tokio",
  "tonic",
  "tonic-prost",

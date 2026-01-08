@@ -1,4 +1,6 @@
+use anyhow::Result;
 use redis::{Client, ConnectionLike};
+use redis::aio::MultiplexedConnection;
 
 use crate::config::RedisConfig;
 
@@ -28,5 +30,10 @@ impl RedisService {
         } else {
             panic!("Failed to connect to Redis (Invalid credentials or server down)");
         }
+    }
+
+    pub async fn connection(&self) -> Result<MultiplexedConnection> {
+        let connection = self.client.get_multiplexed_async_connection().await?;
+        Ok(connection)
     }
 }
