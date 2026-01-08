@@ -35,7 +35,6 @@ impl LogRowRepository for LogRowClickhouseRepository {
         for value in &values {
             if let Err(e) = insert.write(value).await {
                 tracing::error!("Write error in Clickhouse buffer: {:?}", e);
-                // TODO: but row in emergency buffer
             }
         }
 
