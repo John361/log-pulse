@@ -12,6 +12,7 @@ redis:
     address: "127.0.0.1:6379"
     user: "default"
     password: "changeme"
+    database: "ingestor:logs"
     batch_capacity: 3000
 
 worker:

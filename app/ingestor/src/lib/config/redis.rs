@@ -7,6 +7,7 @@ pub struct RedisConfig {
     address: String,
     user: String,
     password: Secret,
+    pub database: String,
     pub batch_capacity: usize,
 }
 

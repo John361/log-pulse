@@ -25,7 +25,7 @@ impl LogRowBufferRepository for LogRowBufferRedisRepository {
         let mut pipe = redis::pipe();
         for value in values {
             let log_json = serde_json::to_string(&value)?;
-            pipe.cmd("RPUSH").arg("ingestor:logs").arg(log_json);
+            pipe.cmd("RPUSH").arg(&self.service.database).arg(log_json);
         }
 
         let _: () = pipe.query_async(&mut connection).await?;
@@ -37,7 +37,7 @@ impl LogRowBufferRepository for LogRowBufferRedisRepository {
         let mut connection = self.service.connection().clone();
 
         let logs: Vec<String> = redis::cmd("LPOP")
-            .arg("ingestor:logs") // TODO: move in config
+            .arg(&self.service.database)
             .arg(self.service.batch_capacity)
             .query_async(&mut connection)
             .await?;

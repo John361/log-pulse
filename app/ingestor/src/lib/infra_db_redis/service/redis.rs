@@ -5,6 +5,7 @@ use crate::config::RedisConfig;
 
 pub struct RedisService {
     connection: MultiplexedConnection,
+    pub database: String,
     pub batch_capacity: usize,
 }
 
@@ -12,6 +13,7 @@ impl RedisService {
     pub async fn new(config: RedisConfig) -> Self {
         Self {
             connection: Self::connect(&config).await,
+            database: config.database,
             batch_capacity: config.batch_capacity,
         }
     }
