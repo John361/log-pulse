@@ -3,18 +3,17 @@ use std::sync::Arc;
 use anyhow::Result;
 use async_trait::async_trait;
 use clickhouse::insert::Insert;
-use tokio::sync::Mutex;
 
 use crate::domain::model::LogRow;
 use crate::domain::repository::LogRowRepository;
 use crate::infra_db_clickhouse::service::ClickhouseService;
 
 pub struct LogRowClickhouseRepository {
-    service: Arc<Mutex<ClickhouseService>>,
+    service: Arc<ClickhouseService>,
 }
 
 impl LogRowClickhouseRepository {
-    pub fn new(service: Arc<Mutex<ClickhouseService>>) -> Self {
+    pub fn new(service: Arc<ClickhouseService>) -> Self {
         Self { service }
     }
 }
@@ -22,9 +21,7 @@ impl LogRowClickhouseRepository {
 #[async_trait]
 impl LogRowRepository for LogRowClickhouseRepository {
     async fn insert(&self, values: Vec<LogRow>) -> Result<()> {
-        let service = self.service.lock().await;
-
-        let mut insert: Insert<LogRow> = match service.client().insert("logs").await {
+        let mut insert: Insert<LogRow> = match self.service.client().insert("logs").await {
             Ok(ins) => ins,
             Err(e) => {
                 tracing::error!("Cannot initialize Clickhouse insert: {:?}", e);
