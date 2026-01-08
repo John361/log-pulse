@@ -20,7 +20,7 @@ FROM debian:trixie-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y ca-certificates libssl3 && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y ca-certificates libssl3 gettext && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /usr/src/app/target/release/log-pulse-ingestor /app/log-pulse-ingestor
 

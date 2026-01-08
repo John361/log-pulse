@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ include "log-pulse-ingestor.fullname" . }}-config
+data:
+    app.conf.yml: |
+        clickhouse:
+            address: {{ .Values.appConfig.clickhouse.url | quote }}
+            user: {{ .Values.appConfig.clickhouse.user | quote }}
+            password: "${CLICKHOUSE_PASSWORD}"
+            database: {{ .Values.appConfig.clickhouse.database | quote }}
+        grpc:
+            address: {{ .Values.appConfig.grpc.address | quote }}
+            port: {{ .Values.appConfig.grpc.port }}
+        redis:
+            address: {{ .Values.appConfig.redis.address | quote }}
+            user: {{ .Values.appConfig.redis.user | quote }}
+            password: "${REDIS_PASSWORD}"
+            database: {{ .Values.appConfig.redis.database | quote }}
+            batch_capacity: {{ .Values.appConfig.redis.batch_capacity }}
+        worker:
+            buffer_size: {{ .Values.appConfig.worker.buffer_size }}
+            flush_interval_seconds: {{ .Values.appConfig.worker.flush_interval_seconds }}
+            batch_capacity: {{ .Values.appConfig.worker.batch_capacity }}

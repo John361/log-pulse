@@ -36,3 +36,23 @@ cp app.conf.template.yml app.conf.yml
 
 RUST_LOG=debug cargo run
 ```
+
+## Build
+### Docker
+```shell
+cd app
+
+VERSION="changeme"
+docker build -t log-pulse-injestor:${VERSION}
+```
+
+### Helm
+```shell
+cd charts
+
+kubectl create namespace log-pulse
+helm upgrade --install log-pulse-ingestor ./log-pulse-ingestor \
+    --set secrets.clickhousePassword="changeme" \
+    --set secrets.redisPassword="changeme" \
+    --namespace log-pulse
+```
