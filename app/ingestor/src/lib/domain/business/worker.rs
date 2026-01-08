@@ -35,7 +35,10 @@ impl WorkerBusiness {
 
                     _ = flush_interval.tick() => {
                         tracing::info!("Flushing batch due to interval...");
-                        self.service.flush().await.unwrap(); // TODO: fix unwrap
+
+                        if let Err(e) = self.service.flush().await {
+                            tracing::error!("Failed to flush logs: {e:?}. Retrying at next interval.");
+                        }
                     }
                 }
             }
