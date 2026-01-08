@@ -1,11 +1,12 @@
 use serde::Deserialize;
 
-use crate::config::{ClickhouseConfig, GrpcConfig, WorkerConfig};
+use crate::config::{ClickhouseConfig, GrpcConfig, RedisConfig, WorkerConfig};
 
 #[derive(Deserialize)]
 pub struct AppConfig {
     pub clickhouse: ClickhouseConfig,
     pub grpc: GrpcConfig,
+    pub redis: RedisConfig,
     pub worker: WorkerConfig,
 }
 

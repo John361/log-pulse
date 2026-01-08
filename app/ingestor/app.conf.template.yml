@@ -8,6 +8,11 @@ grpc:
     address: "[::1]"
     port: 8080
 
+redis:
+    address: "127.0.0.1:6379"
+    user: "default"
+    password: "changeme"
+
 worker:
     buffer_size: 10000
     batch_capacity: 100
