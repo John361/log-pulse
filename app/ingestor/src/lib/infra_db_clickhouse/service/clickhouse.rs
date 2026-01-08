@@ -13,7 +13,7 @@ impl ClickhouseService {
             client: Client::default()
                 .with_url(config.address)
                 .with_user(config.user)
-                .with_password(config.password)
+                .with_password(config.password.expose())
                 .with_database(config.database),
         };
 

@@ -1,15 +1,17 @@
 use serde::Deserialize;
 
+use crate::config::Secret;
+
 #[derive(Deserialize)]
 pub struct RedisConfig {
     address: String,
     user: String,
-    password: String, // TODO: use as a secret
+    password: Secret,
     pub batch_capacity: usize,
 }
 
 impl RedisConfig {
     pub fn uri(&self) -> String {
-        format!("redis://{}:{}@{}", self.user, self.password, self.address)
+        format!("redis://{}:{}@{}", self.user, self.password.expose(), self.address)
     }
 }
