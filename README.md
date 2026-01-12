@@ -46,7 +46,7 @@ VERSION="changeme"
 docker build -t log-pulse-injestor:${VERSION}
 ```
 
-### Helm
+### Helm (beta)
 ```shell
 cd charts
 
@@ -55,4 +55,10 @@ helm upgrade --install log-pulse-ingestor ./log-pulse-ingestor \
     --set secrets.clickhousePassword="changeme" \
     --set secrets.redisPassword="changeme" \
     --namespace log-pulse
+```
+
+## Helpers
+### Generate a random password
+```shell
+tr -dc A-Za-z0-9 </dev/urandom | head -c "20" ; echo ''
 ```
