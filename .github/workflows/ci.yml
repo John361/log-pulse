@@ -1,4 +1,4 @@
-name: Docker Build and Publish
+name: CI - Build and Publish
 
 on:
     push:
@@ -19,6 +19,7 @@ jobs:
             packages: write
 
         steps:
+            # ----- Docker ----- #
             - name: Checkout repository
               uses: actions/checkout@v6
 
@@ -46,3 +47,28 @@ jobs:
                   push: true
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
+
+            # ----- Helm ----- #
+            - name: Install Helm
+              uses: azure/setup-helm@v4.3.0
+
+            - name: Prepare Helm Chart
+              id: helm_vars
+              run: |
+                   VERSION=${{ github.ref_name }}
+
+                   if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+                   VERSION=${{ github.event.inputs.version }}
+                   fi
+
+                   echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+                   sed -i "s/^version:.*/version: ${VERSION}/" charts/log-pulse-ingestor/Chart.yaml
+                   sed -i "s/^appVersion:.*/appVersion: ${VERSION}/" charts/log-pulse-ingestor/Chart.yaml
+
+            - name: Package and Push Helm Chart
+              run: |
+                  VERSION=${{ steps.helm_vars.outputs.version }}
+
+                  helm package charts/log-pulse-ingestor --version ${VERSION}
+                  helm push log-pulse-ingestor-${VERSION}.tgz oci://ghcr.io/${{ github.repository_owner }}/chart
