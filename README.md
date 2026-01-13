@@ -51,6 +51,8 @@ docker build -t log-pulse-injestor:${VERSION}
 cd charts
 
 kubectl create namespace log-pulse
+
+helm install log-pulse-ingestor log-pulse-ingestor --dry-run=client
 helm upgrade --install log-pulse-ingestor ./log-pulse-ingestor \
     --set secrets.clickhousePassword="changeme" \
     --set secrets.redisPassword="changeme" \
