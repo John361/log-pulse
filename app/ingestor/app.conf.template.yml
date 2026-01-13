@@ -13,7 +13,7 @@ redis:
     user: "default"
     password: "changeme"
     database: "ingestor:logs"
-    batch_capacity: 3000
+    batch_capacity: 10000
 
 worker:
     buffer_size: 10000
