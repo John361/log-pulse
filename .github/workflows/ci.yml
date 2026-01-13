@@ -69,6 +69,7 @@ jobs:
             - name: Package and Push Helm Chart
               run: |
                   VERSION=${{ steps.helm_vars.outputs.version }}
+                  OWNER_LC=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
 
                   helm package charts/log-pulse-ingestor --version ${VERSION}
-                  helm push log-pulse-ingestor-${VERSION}.tgz oci://ghcr.io/${{ github.repository_owner }}/chart
+                  helm push log-pulse-ingestor-${VERSION}.tgz oci://ghcr.io/${OWNER_LC}/charts
