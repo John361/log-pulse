@@ -1,0 +1,18 @@
+[package]
+name = "log-pulse-ingestor-sdk"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "lib"
+path = "src/lib/lib.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+log-pulse-ingestor = { path = "../ingestor" }
+prost-types = { workspace = true }
+tokio = { workspace = true }
+tokio-stream = { workspace = true }
+tonic = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
