@@ -923,6 +923,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "log-pulse-ingestor-sdk"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "log-pulse-ingestor",
+ "prost-types",
+ "tokio",
+ "tokio-stream",
+ "tonic",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "lz4_flex"
 version = "0.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
