@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [lib]
-name = "lib"
+name = "ingestor_sdk_lib"
 path = "src/lib/lib.rs"
 
 [dependencies]
