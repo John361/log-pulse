@@ -1,5 +1,5 @@
-use redis::{Client, ConnectionLike};
 use redis::aio::MultiplexedConnection;
+use redis::{Client, ConnectionLike};
 
 use crate::config::RedisConfig;
 
@@ -28,7 +28,9 @@ impl RedisService {
             .check_connection();
 
         if connected {
-            client.get_multiplexed_async_connection().await
+            client
+                .get_multiplexed_async_connection()
+                .await
                 .inspect(|_| tracing::debug!("Redis connection established"))
                 .unwrap_or_else(|e| panic!("Cannot get redis client connection: {e:?}"))
         } else {

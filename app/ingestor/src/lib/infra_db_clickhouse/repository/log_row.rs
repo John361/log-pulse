@@ -39,11 +39,13 @@ impl LogRowRepository for LogRowClickhouseRepository {
             Ok(_) => {
                 tracing::info!("Successfully flushed {} logs to ClickHouse", values.len());
                 Ok(())
-            },
+            }
             Err(e) => {
                 tracing::error!("Failed to commit batch to ClickHouse: {:?}", e);
-                Err(anyhow::anyhow!("ClickHouse failed to commit batch to ClickHouse"))
-            },
+                Err(anyhow::anyhow!(
+                    "ClickHouse failed to commit batch to ClickHouse"
+                ))
+            }
         }
     }
 }

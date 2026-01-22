@@ -1,12 +1,12 @@
 use tokio::sync::mpsc::Sender;
 use tonic::transport::Server;
-use tonic_health::server::health_reporter;
 use tonic_health::ServingStatus;
+use tonic_health::server::health_reporter;
 
 use crate::config::GrpcConfig;
 use crate::grpc::log;
-use crate::grpc::log::log_ingestor_grpc_server::LogIngestorGrpcServer;
 use crate::grpc::log::LogEntryRequest;
+use crate::grpc::log::log_ingestor_grpc_server::LogIngestorGrpcServer;
 use crate::infra_inbound_grpc::service::LogIngestorServiceGrpcImpl;
 
 pub struct GrpcServer {
@@ -22,7 +22,9 @@ impl GrpcServer {
         let service = LogIngestorServiceGrpcImpl::new(tx);
 
         let (health_reporter, health_service) = health_reporter();
-        health_reporter.set_service_status("log-pulse-ingestor", ServingStatus::Serving).await;
+        health_reporter
+            .set_service_status("log-pulse-ingestor", ServingStatus::Serving)
+            .await;
 
         let reflection_service = tonic_reflection::server::Builder::configure()
             .register_encoded_file_descriptor_set(log::FILE_DESCRIPTOR_SET)

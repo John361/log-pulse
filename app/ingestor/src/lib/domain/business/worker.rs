@@ -14,7 +14,12 @@ pub struct WorkerBusiness {
 }
 
 impl WorkerBusiness {
-    pub fn new(rx: mpsc::Receiver<LogEntryRequest>, flush_interval_seconds: u64, batch_capacity: usize, service: LogRowService) -> Self {
+    pub fn new(
+        rx: mpsc::Receiver<LogEntryRequest>,
+        flush_interval_seconds: u64,
+        batch_capacity: usize,
+        service: LogRowService,
+    ) -> Self {
         Self {
             rx,
             flush_interval_seconds,
@@ -34,7 +39,9 @@ impl WorkerBusiness {
                         local_batch.push(log.into());
 
                         if local_batch.len() >= self.batch_capacity {
-                            if let Err(e) = self.service.push_to_buffer(local_batch.drain(..).collect()).await {
+                            let batch_to_send = std::mem::take(&mut local_batch);
+
+                            if let Err(e) = self.service.push_to_buffer(batch_to_send).await {
                                 tracing::error!("Failed to push batch to buffer: {:?}", e);
                             }
                         }
@@ -42,7 +49,9 @@ impl WorkerBusiness {
 
                     _ = flush_interval.tick() => {
                         if !local_batch.is_empty() {
-                            if let Err(e) = self.service.push_to_buffer(local_batch.drain(..).collect()).await {
+                            let batch_to_send = std::mem::take(&mut local_batch);
+
+                            if let Err(e) = self.service.push_to_buffer(batch_to_send).await {
                                 tracing::error!("Failed to push remaining batch to buffer: {:?}", e);
                             }
                         }

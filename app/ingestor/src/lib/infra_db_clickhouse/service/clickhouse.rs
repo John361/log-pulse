@@ -17,7 +17,9 @@ impl ClickhouseService {
                 .with_database(config.database),
         };
 
-        service.check_connection().await
+        service
+            .check_connection()
+            .await
             .unwrap_or_else(|e| panic!("Cannot connect to Clickhouse: {e:?}"));
 
         service

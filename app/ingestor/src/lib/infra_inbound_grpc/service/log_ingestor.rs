@@ -1,6 +1,6 @@
 use tokio::sync::mpsc;
-use tonic::{Request, Response, Status, Streaming};
 use tonic::codegen::tokio_stream::StreamExt;
+use tonic::{Request, Response, Status, Streaming};
 
 use crate::grpc::log::log_ingestor_grpc_server::LogIngestorGrpc;
 use crate::grpc::log::{LogEntryRequest, LogResponse};
@@ -18,7 +18,10 @@ impl LogIngestorServiceGrpcImpl {
 
 #[tonic::async_trait]
 impl LogIngestorGrpc for LogIngestorServiceGrpcImpl {
-    async fn send_log(&self, request: Request<LogEntryRequest>) -> Result<Response<LogResponse>, Status> {
+    async fn send_log(
+        &self,
+        request: Request<LogEntryRequest>,
+    ) -> Result<Response<LogResponse>, Status> {
         let log_entry = request.into_inner();
 
         if let Err(e) = self.tx.try_send(log_entry) {
@@ -31,7 +34,10 @@ impl LogIngestorGrpc for LogIngestorServiceGrpcImpl {
         }))
     }
 
-    async fn stream_logs(&self, request: Request<Streaming<LogEntryRequest>>) -> Result<Response<LogResponse>, Status> {
+    async fn stream_logs(
+        &self,
+        request: Request<Streaming<LogEntryRequest>>,
+    ) -> Result<Response<LogResponse>, Status> {
         let mut stream = request.into_inner();
 
         while let Some(log_entry) = stream.next().await {
