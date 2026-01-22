@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use prost_types::{Struct, Timestamp, Value};
 use prost_types::value::Kind;
@@ -13,11 +13,14 @@ impl From<LogRow> for LogEntryRequest {
             nanos: ((value.timestamp % 1000) * 1_000_000) as i32,
         });
 
-        let metadata = if value.metadata.is_empty() {
+        let metadata = if value.metadata.is_empty() || value.metadata == "{}" {
             None
         } else {
+            let raw_map: HashMap<String, String> = serde_json::from_str(&value.metadata)
+                .unwrap_or_default();
+
             let mut fields = BTreeMap::new();
-            for (k, v) in value.metadata {
+            for (k, v) in raw_map {
                 fields.insert(k, Value {
                     kind: Some(Kind::StringValue(v)),
                 });
