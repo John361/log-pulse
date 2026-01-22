@@ -43,7 +43,7 @@ RUST_LOG=debug cargo run
 cd app
 
 VERSION="changeme"
-docker build -t log-pulse-injestor:${VERSION}
+docker build -t log-pulse-injestor:${VERSION} .
 ```
 
 ### Helm (beta)
