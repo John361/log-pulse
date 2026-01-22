@@ -4,10 +4,12 @@ WORKDIR /usr/src/app
 
 COPY Cargo.toml Cargo.lock ./
 COPY ingestor/Cargo.toml ./ingestor/
+COPY ingestor-sdk-rust/Cargo.toml ./ingestor-sdk-rust/
 
-RUN mkdir -p ingestor/src/bin ingestor/src/lib && \
+RUN mkdir -p ingestor/src/bin ingestor/src/lib ingestor-sdk-rust/src/lib && \
     echo "fn main() {}" > ingestor/src/bin/main.rs && \
-    touch ingestor/src/lib/lib.rs
+    touch ingestor/src/lib/lib.rs && \
+    touch ingestor-sdk-rust/src/lib/lib.rs
 RUN cargo build --release --bin log-pulse-ingestor
 
 COPY ingestor/src ./ingestor/src
