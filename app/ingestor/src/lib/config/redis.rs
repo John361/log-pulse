@@ -13,6 +13,11 @@ pub struct RedisConfig {
 
 impl RedisConfig {
     pub fn uri(&self) -> String {
-        format!("redis://{}:{}@{}", self.user, self.password.expose(), self.address)
+        format!(
+            "redis://{}:{}@{}",
+            self.user,
+            self.password.expose(),
+            self.address
+        )
     }
 }

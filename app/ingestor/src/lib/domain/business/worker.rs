@@ -14,7 +14,12 @@ pub struct WorkerBusiness {
 }
 
 impl WorkerBusiness {
-    pub fn new(rx: mpsc::Receiver<LogEntryRequest>, flush_interval_seconds: u64, batch_capacity: usize, service: LogRowService) -> Self {
+    pub fn new(
+        rx: mpsc::Receiver<LogEntryRequest>,
+        flush_interval_seconds: u64,
+        batch_capacity: usize,
+        service: LogRowService,
+    ) -> Self {
         Self {
             rx,
             flush_interval_seconds,

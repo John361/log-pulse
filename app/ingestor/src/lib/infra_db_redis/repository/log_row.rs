@@ -42,7 +42,8 @@ impl LogRowBufferRepository for LogRowBufferRedisRepository {
             .query_async(&mut connection)
             .await?;
 
-        let logs = logs.iter()
+        let logs = logs
+            .iter()
             .filter_map(|json| serde_json::from_str::<LogRow>(json).ok())
             .collect();
 

@@ -1,4 +1,7 @@
-use lib::app::{build_clickhouse_service, build_grpc_server, build_log_row_service, build_mscp_channel, build_redis_service, build_worker_business};
+use lib::app::{
+    build_clickhouse_service, build_grpc_server, build_log_row_service, build_mscp_channel,
+    build_redis_service, build_worker_business,
+};
 use lib::config::AppConfig;
 
 #[tokio::main]
@@ -29,7 +32,7 @@ fn init_tracing() {
             tracing_subscriber::EnvFilter::from_default_env()
                 .add_directive("h2::codec=warn".parse().unwrap())
                 .add_directive("h2::proto=warn".parse().unwrap())
-                .add_directive("hyper_util::client=warn".parse().unwrap())
+                .add_directive("hyper_util::client=warn".parse().unwrap()),
         )
         .init();
 

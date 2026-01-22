@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use tokio::sync::mpsc::{Receiver, Sender};
-use tokio::sync::{mpsc, Mutex};
+use tokio::sync::{Mutex, mpsc};
 
 use crate::config::WorkerConfig;
 use crate::domain::business::WorkerBusiness;
@@ -13,7 +13,10 @@ use crate::infra_db_clickhouse::service::ClickhouseService;
 use crate::infra_db_redis::repository::LogRowBufferRedisRepository;
 use crate::infra_db_redis::service::RedisService;
 
-pub fn build_log_row_service(clickhouse_service: &Arc<ClickhouseService>, redis_service: &Arc<RedisService>) -> LogRowService {
+pub fn build_log_row_service(
+    clickhouse_service: &Arc<ClickhouseService>,
+    redis_service: &Arc<RedisService>,
+) -> LogRowService {
     let repository = LogRowClickhouseRepository::new(clickhouse_service.clone());
     let repository: Box<dyn LogRowRepository> = Box::new(repository);
     let repository = Arc::new(Mutex::new(repository));
@@ -25,10 +28,21 @@ pub fn build_log_row_service(clickhouse_service: &Arc<ClickhouseService>, redis_
     LogRowService::new(repository, buffer_repository)
 }
 
-pub fn build_mscp_channel(config: &WorkerConfig) -> (Sender<LogEntryRequest>, Receiver<LogEntryRequest>) {
+pub fn build_mscp_channel(
+    config: &WorkerConfig,
+) -> (Sender<LogEntryRequest>, Receiver<LogEntryRequest>) {
     mpsc::channel::<LogEntryRequest>(config.buffer_size)
 }
 
-pub fn build_worker_business(config: &WorkerConfig, rx: Receiver<LogEntryRequest>, service: LogRowService) -> WorkerBusiness {
-    WorkerBusiness::new(rx, config.flush_interval_seconds, config.batch_capacity, service)
+pub fn build_worker_business(
+    config: &WorkerConfig,
+    rx: Receiver<LogEntryRequest>,
+    service: LogRowService,
+) -> WorkerBusiness {
+    WorkerBusiness::new(
+        rx,
+        config.flush_interval_seconds,
+        config.batch_capacity,
+        service,
+    )
 }

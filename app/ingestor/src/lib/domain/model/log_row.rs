@@ -52,7 +52,8 @@ fn stringify_kind(kind: Kind) -> String {
             serde_json::to_string(&json_val).unwrap_or_else(|_| "{}".to_string())
         }
         Kind::ListValue(l) => {
-            let json_list: Vec<Value> = l.values
+            let json_list: Vec<Value> = l
+                .values
                 .into_iter()
                 .filter_map(|v| v.kind.map(prost_value_to_json))
                 .collect();
@@ -83,10 +84,11 @@ fn prost_value_to_json(kind: Kind) -> Value {
         Kind::StringValue(s) => Value::String(s),
         Kind::BoolValue(b) => Value::Bool(b),
         Kind::StructValue(s) => prost_struct_to_json(s.fields),
-        Kind::ListValue(l) => {
-            Value::Array(l.values.into_iter()
+        Kind::ListValue(l) => Value::Array(
+            l.values
+                .into_iter()
                 .filter_map(|v| v.kind.map(prost_value_to_json))
-                .collect())
-        }
+                .collect(),
+        ),
     }
 }

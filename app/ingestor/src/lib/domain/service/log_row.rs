@@ -13,8 +13,14 @@ pub struct LogRowService {
 }
 
 impl LogRowService {
-    pub fn new(repository: Arc<Mutex<Box<dyn LogRowRepository>>>, buffer_repository: Arc<Mutex<Box<dyn LogRowBufferRepository>>>) -> Self {
-        Self { repository, buffer_repository }
+    pub fn new(
+        repository: Arc<Mutex<Box<dyn LogRowRepository>>>,
+        buffer_repository: Arc<Mutex<Box<dyn LogRowBufferRepository>>>,
+    ) -> Self {
+        Self {
+            repository,
+            buffer_repository,
+        }
     }
 
     pub async fn insert(&self, values: Vec<LogRow>) -> Result<()> {
