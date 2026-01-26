@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["ingestor", "ingestor-sdk-rust"]
+members = ["analyzer", "ingestor", "ingestor-sdk-rust"]
 
 [workspace.dependencies]
 anyhow = "1.0.100"
@@ -8,6 +8,10 @@ async-trait = "0.1.89"
 chrono = { version = "0.4.42", features = ["serde"] }
 clickhouse = { version = "0.14.1", features = ["chrono"] }
 config = { version = "0.15.19", features = ["yaml"] }
+linfa = "0.7.0"
+linfa-clustering = "0.7.0"
+linfa-nn = "0.7.0"
+ndarray = "0.15.0"
 prost = "0.14.1"
 prost-types = "0.14.1"
 redis = { version = "1.0.2", features = ["tokio-comp"] }
